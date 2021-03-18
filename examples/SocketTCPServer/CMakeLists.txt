@@ -8,7 +8,6 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-Wall")
 
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
-#set (CMAKE_INCLUDE_DIR ${CMAKE_HOME_DIRECTORY}/include)
 
 message ("############################################################")
 message ("# Example SocketTCPServer                                  #")

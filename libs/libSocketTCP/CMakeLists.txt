@@ -8,8 +8,6 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-Wall -fopenmp")
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-#set (CMAKE_INCLUDE_DIR ${CMAKE_HOME_DIRECTORY}/libs/libTCP)
-#set (CMAKE_SOURCE_DIR ${CMAKE_HOME_DIRECTORY}/libs/libTCP)
 
 message ("##################################################################################################")
 message ("# lib SocketTCP                                                                                  #")

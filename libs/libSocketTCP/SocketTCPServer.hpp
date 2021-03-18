@@ -20,7 +20,7 @@ namespace SocketTCP {
         STATUS Open(unsigned int Port);
         STATUS Accept(void);
         STATUS Read(void * buffer, size_t Size, int32_t *SendLen);
-        STATUS Write(void * buffer, size_t Size, int32_t *RecvLen);
+        STATUS Write(const void * buffer, size_t Size, int32_t *RecvLen);
         STATUS Close();
     };
 

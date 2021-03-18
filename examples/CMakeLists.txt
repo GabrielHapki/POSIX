@@ -14,10 +14,10 @@ ADD_SUBDIRECTORY(SocketTCPServer)
 # SocketUDPClient
 #------------------------------------------------------------
 message ("-")
-#ADD_SUBDIRECTORY(SocketUDPClient)
+ADD_SUBDIRECTORY(SocketUDPClient)
 
 #------------------------------------------------------------
 # SocketUDPServer
 #------------------------------------------------------------
 message ("-")
-#ADD_SUBDIRECTORY(SocketUDPServer)
+ADD_SUBDIRECTORY(SocketUDPServer)

@@ -60,7 +60,7 @@ namespace SocketTCP {
         return OPEN;
     }
 
-    STATUS Server::Write(void * buffer, size_t Size, int32_t *SendLen) {
+    STATUS Server::Write(const void * buffer, size_t Size, int32_t *SendLen) {
         ssize_t Len = 0;
         if (this->sockdl > 0) {
             Len = write(this->sockdl, buffer, Size);

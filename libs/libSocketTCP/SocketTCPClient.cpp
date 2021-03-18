@@ -37,7 +37,7 @@ namespace SocketTCP {
         return OPEN;
     }
 
-    STATUS Client::Write(void * buffer, size_t Size, int32_t *SendLen) {
+    STATUS Client::Write(const void * buffer, size_t Size, int32_t *SendLen) {
         size_t Len = 0;
         if (this->sockd > 0) {
             Len = write(this->sockd, buffer, Size);

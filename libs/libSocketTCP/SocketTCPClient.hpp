@@ -15,7 +15,7 @@ namespace SocketTCP {
         ~Client(void);
 
         STATUS Open(const char * ip_server, const int Port);
-        STATUS Write(void * buffer, size_t Size, int32_t *SendLen);
+        STATUS Write(const void * buffer, size_t Size, int32_t *SendLen);
         STATUS Read(void * buffer, size_t Size, int32_t *RecvLen);
         STATUS Close(void);
     };
