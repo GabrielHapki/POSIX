@@ -2,7 +2,7 @@
 # libSocketUDP
 #------------------------------------------------------------
 message ("-")
-#ADD_SUBDIRECTORY(libSocketUDP)
+ADD_SUBDIRECTORY(libSocketUDP)
 
 #------------------------------------------------------------
 # libSocketTCP

@@ -8,7 +8,6 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-Wall")
 
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
-#set (CMAKE_INCLUDE_DIR ${CMAKE_HOME_DIRECTORY}/include)
 
 message ("############################################################")
 message ("# Example SocketUPDClient                                  #")
@@ -18,9 +17,9 @@ message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
 message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("EXE_OUTPUT_PATH =>      ${EXECUTABLE_OUTPUT_PATH}")
 
-include_directories (${CMAKE_SOURCE_DIR}/libs/liboclWrapper)
+include_directories (${CMAKE_SOURCE_DIR}/libs/libSocketUDP)
 link_directories (${CMAKE_BINARY_DIR}/lib)
 
-add_executable (SocketUPDClient image.cpp)
+add_executable (SocketUDPClient main.cpp)
 
-target_link_libraries (SocketUPDClient oclWrap)
+target_link_libraries (SocketUDPClient SocketUDP)
