@@ -1,18 +1,17 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include "MessageQueues.hpp"
+#include "MsgQueues.hpp"
 
 using namespace std;
 
 int main(int argc, char** argv) {
     string message_out = "Hi!";
     uint8_t message_in[32] = {0};
-    int32_t bytes = 0;
 
     try {
-        MessageQueues receiver(1000);
-        receiver.Send(message_out.c_str(), message_out.size());
+        MsgQueuesSend mq(MsgQueue::SOUNDPLAYER);
+        mq.send(message_out.c_str(), message_out.size(), 1);
         //receiver.Receive(message_in, sizeof(message_in), &bytes);
     }
     catch(exception& e) {
