@@ -1,20 +1,38 @@
 #ifndef MESSAGEQUEUES_H
 #define MESSAGEQUEUES_H
 
+#include <sys/ipc.h>
+#include <sys/msg.h>
 #include <stdint.h>
 #include <netinet/in.h>
 
-class MessageQueues {
-private:
-    int messageQueueIdSnd;
-    int messageQueueIdRcv;
-    key_t mKey;
+namespace MessageQueue {
+    enum key_Type { SOUNDPLAYER };
+}
+
+class MsgQueuesBase {
+protected:
+    int messageQueueId;
 
 public:
-    MessageQueues(key_t key);
-    ~MessageQueues(void);
-    bool Send(const void * Buffer, size_t Size);
-    bool Receive(void * Buffer, size_t Size, int32_t *RecLen);
+    MsgQueuesBase();
+    virtual ~MsgQueuesBase(void);
+
+    key_t getKey(MessageQueue::key_Type keyType);
+};
+
+class MsgQueuesSend : public MsgQueuesBase{
+public:
+    MsgQueuesSend(MessageQueue::key_Type keyType);
+    ~MsgQueuesSend(void);
+    bool send(const long Type, const void * Buffer, size_t Size);
+};
+
+class MsgQueuesReceive : public MsgQueuesBase{
+public:
+    MsgQueuesReceive(MessageQueue::key_Type keyType);
+    ~MsgQueuesReceive(void);
+    bool receive(const long Type, void * Buffer, size_t Size, ssize_t *RecLen);
 };
 
 #endif /* MESSAGEQUEUES_H */
