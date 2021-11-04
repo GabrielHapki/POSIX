@@ -1,29 +1,27 @@
 #ifndef SOCKETTCPSERVER_H
 #define SOCKETTCPSERVER_H
 
-#include "SocketTCPCommon.hpp"
 #include <stdint.h>
 #include <cstddef>
+#include <sys/types.h>
 
-namespace SocketTCP {
+class Server {
+public:
+    enum status_t { ERROR, CLOSE, OK, NODATA };
+private:
+    int sockd;
+    int sockdl;
 
-    class Server {
-    private:
-        int sockd;
-        int sockdl;
+public:
+    Server(void);
+    virtual ~Server(void);
 
-        int setNonblocking(unsigned int fd);
-    public:
-        Server();
-        virtual ~Server();
-
-        STATUS Open(unsigned int Port);
-        STATUS Accept(void);
-        STATUS Read(void * buffer, size_t Size, int32_t *SendLen);
-        STATUS Write(const void * buffer, size_t Size, int32_t *RecvLen);
-        STATUS Close();
-    };
-
-}
+    bool Open(const unsigned int port, const uint8_t numListen);
+    bool Close(void);
+    bool Accept(void);
+    bool CloseAccept(void);
+    status_t Read(void * buffer, size_t size, ssize_t *sendLen);
+    status_t Write(const void * buffer, size_t size, ssize_t *recvLen);
+};
 
 #endif /* SOCKETTCPSERVER_H */

@@ -1,101 +1,137 @@
 #include "SocketTCPServer.hpp"
-#include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
-namespace SocketTCP {
+#include <iostream>
+#include <cerrno>
+#include <cstring>
+#include <clocale>
 
-    Server::Server(void) {
-        this->sockd = -1;
-        this->sockdl = -1;
+Server::Server(void) {
+    this->sockd = -1;
+    this->sockdl = -1;
+}
+
+Server::~Server(void) {
+    Close();
+}
+
+bool Server::Open(const unsigned int port, const uint8_t numListen) {
+    if (this->sockd > 0) {
+        this->Close();
+        return false;
     }
 
-    Server::~Server(void) {
-        Close();
+    if ((this->sockd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+        return false;
     }
 
-    STATUS Server::Open(unsigned int Port) {
-        if (this->sockd > 0) {
-            this->Close();
-            return CLOSE;
-        }
+    int on;
+    struct sockaddr_in my_name;
+    setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof (on));
+    bzero((char *) &my_name, sizeof (my_name));
+    my_name.sin_family = AF_INET;
+    my_name.sin_addr.s_addr = INADDR_ANY;
+    my_name.sin_port = htons(port);
 
-        if ((this->sockd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-            return SOCKET_CREATION_FAIL;
-        }
-
-        int on;
-        struct sockaddr_in my_name;
-        setsockopt(sockd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof (on));
-        bzero((char *) &my_name, sizeof (my_name));
-        my_name.sin_family = AF_INET;
-        my_name.sin_addr.s_addr = INADDR_ANY;
-        my_name.sin_port = htons(Port);
-
-        if (bind(this->sockd, (struct sockaddr*) &my_name, sizeof (my_name)) < 0) {
-            return BIND_FAIL;
-        }
-
-        if (listen(this->sockd, 1) < 0) {
-            return LISTEN_FAIL;
-        }
-
-        return OPEN;
+    if (bind(this->sockd, (struct sockaddr*) &my_name, sizeof (my_name)) < 0) {
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+        return false;
     }
 
-    STATUS Server::Accept(void) {
-        if (this->sockd < 0) {
-            return CLOSE;
-        }
-
-        unsigned int addrlen;
-        struct sockaddr_in peer_name;
-        addrlen = sizeof (peer_name);
-        this->sockdl = accept(sockd, (struct sockaddr *) &peer_name, (socklen_t *) & addrlen);
-        if (this->sockdl < 0) {
-            return CLOSE;
-        }
-        return OPEN;
+    if (listen(this->sockd, numListen) < 0) {
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+        return false;
     }
 
-    STATUS Server::Write(const void * buffer, size_t Size, int32_t *SendLen) {
-        ssize_t Len = 0;
-        if (this->sockdl > 0) {
-            Len = write(this->sockdl, buffer, Size);
-            *SendLen = Len;
-            if (Len <= 0) {
-                this->Close();
-                return CLOSE;
-            }
-        } else {
-            return CLOSE;
-        }
-        return OPEN;
+    return true;
+}
+
+bool Server::Close(void) {
+    if (this->sockd < 0) {
+        return false;
     }
 
-    STATUS Server::Read(void * buffer, size_t Size, int32_t *RecvLen) {
-        ssize_t Len = 0;
-        if (this->sockdl > 0) {
-            Len = read(this->sockdl, buffer, Size);
-            *RecvLen = Len;
-            if (Len <= 0) {
-                this->Close();
-                return CLOSE;
-            }
-        } else {
-            return CLOSE;
+    if (CloseAccept()) {
+        if (close(sockd) == 0) {
+            sockd = -1;
+            return true;
         }
-        return OPEN;
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+    }
+    return false;
+}
+
+bool Server::Accept(void) {
+    if (this->sockd < 0) {
+        return false;
     }
 
-    STATUS Server::Close() {
-        close(this->sockdl);
-        close(this->sockd);
-        sockd = -1;
+    unsigned int addrlen;
+    struct sockaddr_in peer_name;
+    addrlen = sizeof (peer_name);
+    this->sockdl = accept(sockd, (struct sockaddr *) &peer_name, (socklen_t *) & addrlen);
+    if (this->sockdl < 0) {
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool Server::CloseAccept(void)
+{
+    if (this->sockdl < 0) {
+        return false;
+    }
+
+    if (close(this->sockdl) == 0) {
         sockdl = -1;
+        return true;
+    }
+    std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+    return false;
+}
+
+Server::status_t Server::Write(const void * buffer, size_t size, ssize_t *sendLen) {
+    if (this->sockdl < 0)
         return CLOSE;
+
+    if ((buffer == nullptr) || sendLen == nullptr)
+        return ERROR;
+
+    *sendLen = send(this->sockdl, buffer, size, MSG_NOSIGNAL);
+    if (*sendLen > 0) {
+        return OK;
+    }
+    std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+    if (this->CloseAccept())
+        return CLOSE;
+
+    return ERROR;
+}
+
+Server::status_t Server::Read(void * buffer, size_t size, ssize_t *recvLen) {
+    if (this->sockdl < 0)
+        return CLOSE;
+
+    if ((buffer == nullptr) || recvLen == nullptr)
+        return ERROR;
+
+    *recvLen = recv(this->sockdl, buffer, size, MSG_DONTWAIT);
+    if (*recvLen < 0) {
+        return NODATA;
+    } else
+    if (*recvLen > 0) {
+        return OK;
+    } else
+    if (*recvLen == 0) {
+        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+        if (this->CloseAccept())
+            return CLOSE;
     }
 
+    return ERROR;
 }
