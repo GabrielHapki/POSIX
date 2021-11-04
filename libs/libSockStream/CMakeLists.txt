@@ -1,8 +1,8 @@
-project (SocketTCP)
+project (SockStream)
 
 # The version number
-set (SocketTCP_VERSION_MAJOR 1)
-set (SocketTCP_VERSION_MINOR 0)
+set (SockStream_VERSION_MAJOR 1)
+set (SockStream_VERSION_MINOR 0)
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-Wall")
@@ -10,11 +10,11 @@ set (CMAKE_CXX_FLAGS "-Wall")
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 message ("##################################################################################################")
-message ("# lib SocketTCP                                                                                  #")
+message ("# lib SockStream                                                                                 #")
 message ("CMAKE_HOME_DIRECTORY => ${CMAKE_HOME_DIRECTORY}")
 message ("CMAKE_INCLUDE_DIR =>    ${CMAKE_INCLUDE_DIR}")
 message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
 message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("CMAKE_LIB_OUTPUT_DIR => ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-add_library (SocketTCP SHARED SocketTCPClient.cpp SocketTCPServer.cpp)
+add_library (SockStream SHARED SockStreamClient.cpp SockStreamServer.cpp)

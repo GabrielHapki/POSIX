@@ -2,13 +2,13 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include "SocketTCPClient.hpp"
+#include "SockStreamClient.hpp"
 
 using namespace std;
 
 int main(int argc, char** argv) {
-    Client::status_t status = Client::CLOSE;
-    Client client;
+    SockStreamClient::status_t status = SockStreamClient::CLOSE;
+    SockStreamClient client;
 
     uint8_t message_in[128] = {0};
     string message_out = "Hello World! ";
@@ -24,18 +24,18 @@ int main(int argc, char** argv) {
                 message_out = "Hello World! " + std::to_string(count);
                 status = client.Write(message_out.c_str() , message_out.size(), &bytes);
                 //status = client.Read(message_in, sizeof(message_in), &bytes);
-                if (status == Client::OK) {
+                if (status == SockStreamClient::OK) {
                     if (bytes > 0)
                         cout << "Client: " << message_in << endl;
                     count++;
                 } else
-                if (status == Client::NODATA) {
+                if (status == SockStreamClient::NODATA) {
                     continue;
                 } else
-                if (status == Client::CLOSE) {
+                if (status == SockStreamClient::CLOSE) {
                     break;
                 }
-                if (status == Client::ERROR) {
+                if (status == SockStreamClient::ERROR) {
                     std::cout << "Something very wrong! review your code!" << std::endl;
                 }
                 usleep(250000);

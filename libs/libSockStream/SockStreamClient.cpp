@@ -1,4 +1,4 @@
-#include "SocketTCPClient.hpp"
+#include "SockStreamClient.hpp"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,15 +10,15 @@
 #include <cstring>
 #include <clocale>
 
-Client::Client(void) {
+SockStreamClient::SockStreamClient(void) {
     this->sockd = -1;
 }
 
-Client::~Client(void) {
+SockStreamClient::~SockStreamClient(void) {
     Close();
 }
 
-bool Client::Open(const char * ip_server, const int Port) {
+bool SockStreamClient::Open(const char * ip_server, const int Port) {
     if (this->sockd > 0) {
         this->Close();
         return false;
@@ -43,7 +43,7 @@ bool Client::Open(const char * ip_server, const int Port) {
     return true;
 }
 
-bool Client::Close(void) {
+bool SockStreamClient::Close(void) {
     if (this->sockd < 0) {
         return false;
     }
@@ -56,7 +56,7 @@ bool Client::Close(void) {
     return false;
 }
 
-Client::status_t Client::Write(const void * buffer, size_t Size, ssize_t *SendLen) {
+SockStreamClient::status_t SockStreamClient::Write(const void * buffer, size_t Size, ssize_t *SendLen) {
     if (this->sockd < 0)
         return CLOSE;
 
@@ -74,7 +74,7 @@ Client::status_t Client::Write(const void * buffer, size_t Size, ssize_t *SendLe
     return ERROR;
 }
 
-Client::status_t Client::Read(void * buffer, size_t Size, ssize_t *RecvLen) {
+SockStreamClient::status_t SockStreamClient::Read(void * buffer, size_t Size, ssize_t *RecvLen) {
     if (this->sockd < 0)
         return CLOSE;
 

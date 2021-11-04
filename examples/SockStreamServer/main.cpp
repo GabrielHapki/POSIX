@@ -1,13 +1,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <strings.h>
-#include "SocketTCPServer.hpp"
+#include "SockStreamServer.hpp"
 
 using namespace std;
 
 int main(int argc, char** argv) {
-    Server::status_t status = Server::CLOSE;
-    Server server;
+    SockStreamServer::status_t status = SockStreamServer::CLOSE;
+    SockStreamServer server;
 
     uint8_t message_in[128] = {0};
     string message_out = "Hi";
@@ -20,16 +20,16 @@ int main(int argc, char** argv) {
                     bzero(message_in, sizeof(message_in));
                     status = server.Read(message_in, sizeof(message_in), &bytes);
                     //status = server.Write(message_out.c_str(), message_out.size(), &bytes);
-                    if (status == Server::OK) {
+                    if (status == SockStreamServer::OK) {
                         cout << "Server: " << message_in << endl;
                     } else
-                    if (status == Server::NODATA) {
+                    if (status == SockStreamServer::NODATA) {
                         continue;
                     } else
-                    if (status == Server::CLOSE) {
+                    if (status == SockStreamServer::CLOSE) {
                         break;
                     }
-                    if (status == Server::ERROR) {
+                    if (status == SockStreamServer::ERROR) {
                         std::cout << "Something very wrong! review your code!" << std::endl;
                     }
                 }

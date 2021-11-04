@@ -1,4 +1,4 @@
-#include "SocketTCPServer.hpp"
+#include "SockStreamServer.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -8,16 +8,16 @@
 #include <cstring>
 #include <clocale>
 
-Server::Server(void) {
+SockStreamServer::SockStreamServer(void) {
     this->sockd = -1;
     this->sockdl = -1;
 }
 
-Server::~Server(void) {
+SockStreamServer::~SockStreamServer(void) {
     Close();
 }
 
-bool Server::Open(const unsigned int port, const uint8_t numListen) {
+bool SockStreamServer::Open(const unsigned int port, const uint8_t numListen) {
     if (this->sockd > 0) {
         this->Close();
         return false;
@@ -49,7 +49,7 @@ bool Server::Open(const unsigned int port, const uint8_t numListen) {
     return true;
 }
 
-bool Server::Close(void) {
+bool SockStreamServer::Close(void) {
     if (this->sockd < 0) {
         return false;
     }
@@ -64,7 +64,7 @@ bool Server::Close(void) {
     return false;
 }
 
-bool Server::Accept(void) {
+bool SockStreamServer::Accept(void) {
     if (this->sockd < 0) {
         return false;
     }
@@ -81,7 +81,7 @@ bool Server::Accept(void) {
     return true;
 }
 
-bool Server::CloseAccept(void)
+bool SockStreamServer::CloseAccept(void)
 {
     if (this->sockdl < 0) {
         return false;
@@ -95,7 +95,7 @@ bool Server::CloseAccept(void)
     return false;
 }
 
-Server::status_t Server::Write(const void * buffer, size_t size, ssize_t *sendLen) {
+SockStreamServer::status_t SockStreamServer::Write(const void * buffer, size_t size, ssize_t *sendLen) {
     if (this->sockdl < 0)
         return CLOSE;
 
@@ -113,7 +113,7 @@ Server::status_t Server::Write(const void * buffer, size_t size, ssize_t *sendLe
     return ERROR;
 }
 
-Server::status_t Server::Read(void * buffer, size_t size, ssize_t *recvLen) {
+SockStreamServer::status_t SockStreamServer::Read(void * buffer, size_t size, ssize_t *recvLen) {
     if (this->sockdl < 0)
         return CLOSE;
 

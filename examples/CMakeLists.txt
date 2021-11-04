@@ -17,16 +17,16 @@ message ("-")
 ADD_SUBDIRECTORY(MessageSender)
 
 #------------------------------------------------------------
-# SocketTCPClient
+# SockStreamClient
 #------------------------------------------------------------
 message ("-")
-ADD_SUBDIRECTORY(SocketTCPClient)
+ADD_SUBDIRECTORY(SockStreamClient)
 
 #------------------------------------------------------------
-# SocketTCPServer
+# SockStreamServer
 #------------------------------------------------------------
 message ("-")
-ADD_SUBDIRECTORY(SocketTCPServer)
+ADD_SUBDIRECTORY(SockStreamServer)
 
 #------------------------------------------------------------
 # SocketUDPClient
