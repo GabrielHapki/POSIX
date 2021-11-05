@@ -8,9 +8,9 @@
 #include <cstring>
 #include <clocale>
 
-SockStreamServer::SockStreamServer(void) {
-    this->sockd = -1;
-    this->sockdl = -1;
+SockStreamServer::SockStreamServer(void) : sockd(-1), sockdl(-1)
+{
+
 }
 
 SockStreamServer::~SockStreamServer(void) {

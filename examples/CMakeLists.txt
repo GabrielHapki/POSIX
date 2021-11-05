@@ -29,13 +29,13 @@ message ("-")
 ADD_SUBDIRECTORY(SockStreamServer)
 
 #------------------------------------------------------------
-# SocketUDPClient
+# SockDgramClient
 #------------------------------------------------------------
 message ("-")
-ADD_SUBDIRECTORY(SocketUDPClient)
+ADD_SUBDIRECTORY(SockDgramClient)
 
 #------------------------------------------------------------
-# SocketUDPServer
+# SockDgramServer
 #------------------------------------------------------------
 message ("-")
-ADD_SUBDIRECTORY(SocketUDPServer)
+ADD_SUBDIRECTORY(SockDgramServer)

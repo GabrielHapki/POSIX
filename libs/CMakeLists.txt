@@ -17,13 +17,13 @@ message ("-")
 ADD_SUBDIRECTORY(libMsgQueues)
 
 #------------------------------------------------------------
-# libSocketUDP
+# libSockDgram
 #------------------------------------------------------------
 message ("-")
-ADD_SUBDIRECTORY(libSocketUDP)
+ADD_SUBDIRECTORY(libSockDgram)
 
 #------------------------------------------------------------
-# libSocketTCP
+# libSockStream
 #------------------------------------------------------------
 message ("-")
 ADD_SUBDIRECTORY(libSockStream)
