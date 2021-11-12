@@ -6,13 +6,13 @@ using namespace std;
 
 int main(int argc, char** argv) {
     bool status = false;
-    UDP server;
+    SockDgram server;
 
     uint8_t message_in[32] = {0};
     string message_out = "Hi";
     ssize_t bytes = 0;
 
-    if (server.Open(UDP::SERVER, "127.0.0.1", 5000, UDP::NONBLOCK)) {
+    if (server.Open(SockDgram::SERVER, "127.0.0.1", 5000, SockDgram::NONBLOCK)) {
         while(1) {
             status = server.Read(message_in, sizeof(message_in), &bytes);
             if (status)

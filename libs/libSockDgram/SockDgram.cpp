@@ -13,17 +13,17 @@
 #include <cstring>
 #include <clocale>
 
-UDP::UDP(void) : sockd(-1)
+SockDgram::SockDgram(void) : sockd(-1)
 {
 
 }
 
-UDP::~UDP()
+SockDgram::~SockDgram()
 {
 
 }
 
-int UDP::make_socket_non_blocking(int sfd) {
+int SockDgram::make_socket_non_blocking(int sfd) {
     int flags, s;
     flags = fcntl(sfd, F_GETFL, 0);
     if (flags == -1) {
@@ -39,7 +39,7 @@ int UDP::make_socket_non_blocking(int sfd) {
     return 0;
 }
 
-bool UDP::Open(const role_t role, const char *ip, const uint32_t port, const block_t blockValue) {
+bool SockDgram::Open(const role_t role, const char *ip, const uint32_t port, const block_t blockValue) {
 
     this->sockd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (this->sockd < 0) {
@@ -69,7 +69,7 @@ bool UDP::Open(const role_t role, const char *ip, const uint32_t port, const blo
     return true;
 }
 
-bool UDP::Close(void) {
+bool SockDgram::Close(void) {
     if (this->sockd < 0) {
         return false;
     }
@@ -82,7 +82,7 @@ bool UDP::Close(void) {
     return false;
 }
 
-bool UDP::Read(void * buffer, size_t size, ssize_t *recvLen) {
+bool SockDgram::Read(void * buffer, size_t size, ssize_t *recvLen) {
     if (this->sockd < 0)
         return false;
 
@@ -98,7 +98,7 @@ bool UDP::Read(void * buffer, size_t size, ssize_t *recvLen) {
     return false;
 }
 
-bool UDP::Write(const void * buffer, size_t size, ssize_t *sendLen) {
+bool SockDgram::Write(const void * buffer, size_t size, ssize_t *sendLen) {
     if (this->sockd < 0)
         return false;
 
