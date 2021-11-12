@@ -6,8 +6,8 @@
 
 class SockDgram {
 public:
-    enum role_t { CLIENT, SERVER } ;
-    enum block_t { BLOCK, NONBLOCK } ;
+    enum role_t { CLIENT = 0, SERVER } ;
+    enum block_t { BLOCK = 0, NONBLOCK } ;
 
 private:
     int sockd;

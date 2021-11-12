@@ -18,8 +18,9 @@ message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("EXE_OUTPUT_PATH =>      ${EXECUTABLE_OUTPUT_PATH}")
 
 include_directories (${CMAKE_SOURCE_DIR}/libs/libSockDgram)
+include_directories (${CMAKE_SOURCE_DIR}/libs/libSudp)
 link_directories (${CMAKE_BINARY_DIR}/lib)
 
 add_executable (SockDgramClient main.cpp)
 
-target_link_libraries (SockDgramClient SockDgram)
+target_link_libraries (SockDgramClient Sudp SockDgram)

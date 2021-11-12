@@ -33,3 +33,9 @@ ADD_SUBDIRECTORY(libSockDgram)
 #------------------------------------------------------------
 message ("-")
 ADD_SUBDIRECTORY(libSockStream)
+
+#------------------------------------------------------------
+# libSudp
+#------------------------------------------------------------
+message ("-")
+ADD_SUBDIRECTORY(libSudp)
