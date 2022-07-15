@@ -51,3 +51,9 @@ ADD_SUBDIRECTORY(SockDgramClient)
 #------------------------------------------------------------
 message ("-")
 ADD_SUBDIRECTORY(SockDgramServer)
+
+#------------------------------------------------------------
+# Inotify
+#------------------------------------------------------------
+message ("-")
+ADD_SUBDIRECTORY(Inotify)
