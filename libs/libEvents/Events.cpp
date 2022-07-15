@@ -3,7 +3,7 @@
 // Class EventBase
 
 EventBase::EventBase(const Events::Compare pCmp, const Events::Times &pCfg) :
-    state(IDLE),
+    state(Events::IDLE),
     status(false),
     varCompare(pCmp),
     timeConfig(pCfg),
@@ -14,7 +14,7 @@ EventBase::~EventBase() {}
 bool EventBase::hasDependent()
 {
     if (depend != nullptr) {
-        if (depend->state == BLOCKED)
+        if (depend->state == Events::BLOCKED)
             return true;
         else
             return false;
@@ -25,57 +25,57 @@ bool EventBase::hasDependent()
 void EventBase::run()
 {
     switch (state) {
-    case IDLE:
+    case Events::IDLE:
         if (compareLogic() && hasDependent()) {
             if (timeConfig.debounce != 0.f) {
                 timer.start();
-                state = DEBOUNCE;
+                state = Events::DEBOUNCE;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> DEBOUNCE" << std::endl;
 #endif
             } else {
-                state = EXECUTE;
+                state = Events::EXECUTE;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> EXECUTE" << std::endl;
 #endif
             }
         }
         break;
-    case DEBOUNCE:
+    case Events::DEBOUNCE:
         if (compareLogic() && hasDependent()) {
             if (timer.getTime() >= timeConfig.debounce) {
-                state = EXECUTE;
+                state = Events::EXECUTE;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> EXECUTE" << std::endl;
 #endif
             }
         } else {
-            state = IDLE;
+            state = Events::IDLE;
 #ifdef GENERIC_EVENT_DEBUG
             std::cout << name << " -> IDLE" << std::endl;
 #endif
         }
         break;
-    case EXECUTE:
+    case Events::EXECUTE:
         status = true;
         callback();
         timer.start();
-        state = COOLDOWN;
+        state = Events::COOLDOWN;
 #ifdef GENERIC_EVENT_DEBUG
         std::cout << name << " -> COOLDOWN" << std::endl;
 #endif
         break;
-    case COOLDOWN:
+    case Events::COOLDOWN:
         {
         if (timer.getTime() >= timeConfig.cooldown) {
             if (depend != nullptr) {
                 depend->reset();
-                state = BLOCKED;
+                state = Events::BLOCKED;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> BLOCKED" << std::endl;
 #endif
             } else {
-                state = IDLE;
+                state = Events::IDLE;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> IDLE" << std::endl;
 #endif
@@ -83,15 +83,15 @@ void EventBase::run()
         }
         }
         break;
-    case BLOCKED:
+    case Events::BLOCKED:
         break;
     }
 }
 
 void EventBase::reset()
 {
-    if (state != IDLE) {
-        state = IDLE;
+    if (state != Events::IDLE) {
+        state = Events::IDLE;
 #ifdef GENERIC_EVENT_DEBUG
         std::cout << name << " -> IDLE (by reset)" << std::endl;
 #endif
@@ -111,9 +111,14 @@ bool EventBase::event()
 void EventBase::setDependent(EventBase *vDep)
 {
     depend = vDep;
-    if ((state == IDLE) && (depend->state == IDLE)) {
-        depend->state = BLOCKED;
+    if ((state == Events::IDLE) && (depend->state == Events::IDLE)) {
+        depend->state = Events::BLOCKED;
     }
+}
+
+Events::States EventBase::getState()
+{
+    return state;
 }
 
 // Class Event

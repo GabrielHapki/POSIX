@@ -5,12 +5,17 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-#include "Timer.hpp"
+#include <Timer.hpp>
 
 //#define GENERIC_EVENT_DEBUG
 
 namespace Events
 {
+    const std::string AC_CONNECT =          "ac_connect";
+    const std::string AC_DISCONNECT =       "ac_disconnect";
+    const std::string BATTERY_LOW =         "battery_low";
+    const std::string BATTERY_RESTORED =    "battery_restored";
+
     enum Compare { MORE_THAN, LESS_THAN };
 
     struct Times {
@@ -18,7 +23,7 @@ namespace Events
         float cooldown;
     };
 
-    enum Init { IDLE, BLOCK };
+    enum States { IDLE, DEBOUNCE, EXECUTE, COOLDOWN, BLOCKED };
 }
 
 /**
@@ -30,9 +35,8 @@ namespace Events
  */
 class EventBase {
     protected:
-        enum States { IDLE, DEBOUNCE, EXECUTE, COOLDOWN, BLOCKED };
         bool status;
-        States state;
+        Events::States state;
         const Events::Compare varCompare;
         const Events::Times &timeConfig;
         EventBase *depend;
@@ -81,6 +85,11 @@ class EventBase {
         void setDependent(EventBase *vDep);
 
         /**
+         * This function returns the current state.
+         */
+        Events::States getState();
+
+        /**
          * This function will be called in the EXECUTE state.
          * It can be overridden when the class Event is inherited to add specific code.
          */
@@ -108,12 +117,12 @@ class Event : public EventBase {
          * @param pInit Initial value (idle/block).
          * @param pName Name of the object (only for debug).
          */
-        Event(T1 &pVar, const Events::Compare pCmp, const T1 pRef, const Events::Times &pCfg, const Events::Init pInit, const std::string pName) :
+        Event(T1 &pVar, const Events::Compare pCmp, const T1 pRef, const Events::Times &pCfg, const Events::States pInit, const std::string pName) :
             EventBase(pCmp, pCfg),
             variable(pVar), reference(pRef)
         {
-            if (pInit == Events::BLOCK)
-                state = BLOCKED;
+            if (pInit != Events::IDLE)
+                state = Events::BLOCKED;
 #ifdef GENERIC_EVENT_DEBUG
             name = pName;
             std::cout << std::endl;
