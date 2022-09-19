@@ -2,67 +2,59 @@
 #define MESSAGEQUEUES_H
 
 #include <fcntl.h>
-#include <sys/stat.h>
-
 #include <mqueue.h>
 #include <errno.h>
+#include <sys/stat.h>
+
+#include <stdexcept>
+
+#include <iostream>
+#include <cerrno>
+#include <cstring>
+#include <clocale>
 
 namespace posix{
-
-namespace MsgQueue {
-    enum key { SOUNDPLAYER };
-}
 
 class MsgQueuesBase {
 protected:
     mqd_t mqfd;
     std::string name;
 
-    std::string getKey(const MsgQueue::key key)
-    {
-        switch(key) {
-        case MsgQueue::SOUNDPLAYER: return "/SoundPlayer_MQ";
-            break;
-        default: return "fail";
-            break;
-        }        
-    }
-
 public:
     MsgQueuesBase() :
         mqfd(-1)
     {
-        std::cout << "MessageQueuesBase constructor" << std::endl;
+
     }
 
     virtual ~MsgQueuesBase(void)
     {
-        std::cout << "MessageQueuesBase destructor" << std::endl;
+
     }
 };
 
 class MsgQueuesSend : public MsgQueuesBase{
 public:
-    MsgQueuesSend(const MsgQueue::key key)
+    MsgQueuesSend(const char *key)
     {
-        name = getKey(key);
         struct mq_attr attr;
         attr.mq_flags = 0;
         attr.mq_maxmsg = 10;
         attr.mq_msgsize = 32;
         attr.mq_curmsgs = 0;
-        mqfd = mq_open(name.c_str(), O_WRONLY | O_CREAT, 0666, &attr);
-        if (mqfd == -1) {
-            perror("mq_open failure from main");
+        mqfd = mq_open(key, O_WRONLY | O_CREAT, 0666, &attr);
+        if (mqfd < 0) {
+            throw("mq_open failed: " + errno);
         } else {
-            std::cout << "MsgQueuesSend constructor mqfd = " << mqfd << std::endl;
-            mq_getattr(mqfd, &attr);
+            auto ret = mq_getattr(mqfd, &attr);
+            if (ret < 0) {
+                throw("mq_getattr failed: " + errno);
+            }
         }
     }
 
     ~MsgQueuesSend(void) override
     {
-        std::cout << "MsgQueuesSend destructor" << std::endl;
         if (mq_close(mqfd) == -1)
             perror("mq_close failure on mqfd");
     }
@@ -83,26 +75,27 @@ public:
 
 class MsgQueuesReceive : public MsgQueuesBase{
 public:
-    MsgQueuesReceive(const MsgQueue::key key)
+    MsgQueuesReceive(const char *key)
     {
-        name = getKey(key);
+        name = key;
         struct mq_attr attr = {0};
         attr.mq_flags = 0;
         attr.mq_maxmsg = 10;
         attr.mq_msgsize = 32;
         attr.mq_curmsgs = 0;
-        mqfd = mq_open(name.c_str(), O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
-        if (mqfd == -1) {
-            perror("mq_open failure from main");
+        mqfd = mq_open(key, O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
+        if (mqfd < 0) {
+            throw("mq_open failed: " + errno);
         } else {
-            std::cout << "MsgQueuesReceive constructor mqfd = " << mqfd << std::endl;
-            mq_getattr(mqfd, &attr);
+            auto ret = mq_getattr(mqfd, &attr);
+            if (ret < 0) {
+                throw("mq_getattr failed: " + errno);
+            }
         }
     }
 
     ~MsgQueuesReceive(void) override
     {
-        std::cout << "MsgQueuesReceive destructor" << std::endl;
         if (mq_close(mqfd) == -1)
             perror("mq_close failure on mqfd");
         if (mq_unlink(name.c_str()) == -1)
@@ -114,7 +107,8 @@ public:
         if (mqfd > 0) {
             *recLen = mq_receive(mqfd, (char *)buffer, size, priority);
             if (*recLen < 0) {
-                //perror("mq_receive failure on mqfd");
+                perror("mq_receive failure on mqfd");
+                std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
             } else {
                 return true;
             }

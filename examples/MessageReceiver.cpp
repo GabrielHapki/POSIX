@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     unsigned int priority = 0;
 
     try {
-        posix::MsgQueuesReceive mq(posix::MsgQueue::SOUNDPLAYER);
+        posix::MsgQueuesReceive mq("/SoundPlayer_MQ");
         mq.receive(message_in, sizeof(message_in), &bytes, &priority);
     }
     catch(exception& e) {

@@ -10,9 +10,8 @@ int main(int argc, char** argv) {
     uint8_t message_in[32] = {0};
 
     try {
-        posix::MsgQueuesSend mq(posix::MsgQueue::SOUNDPLAYER);
+        posix::MsgQueuesSend mq("/SoundPlayer_MQ");
         mq.send(message_out.c_str(), message_out.size(), 1);
-        //receiver.Receive(message_in, sizeof(message_in), &bytes);
     }
     catch(exception& e) {
          cerr << "Exception: " << e.what() << endl;
