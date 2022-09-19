@@ -43,7 +43,7 @@ void EventBase::run()
         break;
     case Events::DEBOUNCE:
         if (compareLogic() && hasDependent()) {
-            if (timer.getTime() >= timeConfig.debounce) {
+            if (timer.get() >= timeConfig.debounce) {
                 state = Events::EXECUTE;
 #ifdef GENERIC_EVENT_DEBUG
                 std::cout << name << " -> EXECUTE" << std::endl;
@@ -67,7 +67,7 @@ void EventBase::run()
         break;
     case Events::COOLDOWN:
         {
-        if (timer.getTime() >= timeConfig.cooldown) {
+        if (timer.get() >= timeConfig.cooldown) {
             if (depend != nullptr) {
                 depend->reset();
                 state = Events::BLOCKED;

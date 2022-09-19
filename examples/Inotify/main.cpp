@@ -4,8 +4,8 @@
 int main(int argc, char** argv)
 {
 //    pdx::Inotify inotify("/home/gabriel/reccounter.log", IN_MODIFY);
-    Inotify inotify("/proc/", IN_ALL_EVENTS);
-    Inotify::Event event;
+    posix::Inotify inotify("/proc/", IN_ALL_EVENTS);
+    posix::Inotify::Event event;
 
     while(1) {
         event = inotify.getEvent();

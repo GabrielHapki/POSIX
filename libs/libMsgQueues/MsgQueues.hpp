@@ -17,6 +17,8 @@
 
 #include <string>
 
+namespace posix{
+
 namespace MsgQueue {
     enum key { SOUNDPLAYER };
 }
@@ -46,5 +48,7 @@ public:
     ~MsgQueuesReceive(void) override;
     bool receive(void * buffer, size_t size, ssize_t *recLen, unsigned int *priority);
 };
+
+}
 
 #endif /* MESSAGEQUEUES_H */

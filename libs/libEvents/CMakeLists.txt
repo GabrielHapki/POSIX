@@ -17,8 +17,7 @@ message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
 message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("CMAKE_LIB_OUTPUT_DIR => ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-include_directories (${CMAKE_SOURCE_DIR}/libs/libTimer)
+include_directories (${CMAKE_SOURCE_DIR}/libs)
 link_directories (${CMAKE_BINARY_DIR}/lib)
 
 add_library (${PROJECT_NAME} SHARED Events.cpp)
-target_link_libraries(${PROJECT_NAME} Timer)

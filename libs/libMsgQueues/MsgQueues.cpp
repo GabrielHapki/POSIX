@@ -8,6 +8,8 @@
 #include <string.h>
 #include <errno.h>
 
+namespace posix{
+
 MsgQueuesBase::MsgQueuesBase() :
     mqfd(-1)
 {
@@ -103,4 +105,6 @@ bool MsgQueuesReceive::receive(void * buffer, size_t size, ssize_t *recLen, unsi
         }
     }
     return false;
+}
+
 }

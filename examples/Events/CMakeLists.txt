@@ -17,10 +17,10 @@ message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
 message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("EXE_OUTPUT_PATH =>      ${EXECUTABLE_OUTPUT_PATH}")
 
-include_directories (${CMAKE_SOURCE_DIR}/libs/libTimer)
+include_directories (${CMAKE_SOURCE_DIR}/libs)
 include_directories (${CMAKE_SOURCE_DIR}/libs/libEvents)
 link_directories (${CMAKE_BINARY_DIR}/lib)
 
 add_executable (gEvents main.cpp)
 
-target_link_libraries (gEvents Timer Events)
+target_link_libraries (gEvents Events)

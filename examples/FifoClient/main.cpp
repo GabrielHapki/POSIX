@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
     bool status = false;
-    FifoClient client;
+    posix::FifoClient client;
 
     string message_out = "Hello World!";
     uint8_t message_in[32] = {0};
