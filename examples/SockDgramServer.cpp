@@ -15,16 +15,16 @@ using namespace std;
 int main(int argc, char** argv) {
     bool status = false;
 #ifdef SUDP
-    SudpServer server;
+    posix::SudpServer server;
 #else
-    SockDgram server;
+    posix::SockDgram server;
 #endif
 
 #ifdef SUDP
-    Sudp::frame_t frame;
+    posix::Sudp::frame_t frame;
     frame.buffer = std::vector<uint8_t>(500*1024);
 
-    if (server.Open(SockDgram::SERVER, "127.0.0.1", 5000)) {
+    if (server.Open(posix::SockDgram::SERVER, "127.0.0.1", 5000)) {
         while(1) {
             status = server.Recv(frame);
             if (status) {

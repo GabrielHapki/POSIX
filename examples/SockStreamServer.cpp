@@ -6,8 +6,8 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    SockStreamServer::status_t status = SockStreamServer::CLOSE;
-    SockStreamServer server;
+    posix::SockStreamServer::status_t status = posix::SockStreamServer::CLOSE;
+    posix::SockStreamServer server;
 
     uint8_t message_in[128] = {0};
     string message_out = "Hi";
@@ -20,16 +20,16 @@ int main(int argc, char** argv) {
                     bzero(message_in, sizeof(message_in));
                     status = server.Read(message_in, sizeof(message_in), &bytes);
                     //status = server.Write(message_out.c_str(), message_out.size(), &bytes);
-                    if (status == SockStreamServer::OK) {
+                    if (status == posix::SockStreamServer::OK) {
                         cout << "Server: " << message_in << endl;
                     } else
-                    if (status == SockStreamServer::NODATA) {
+                    if (status == posix::SockStreamServer::NODATA) {
                         continue;
                     } else
-                    if (status == SockStreamServer::CLOSE) {
+                    if (status == posix::SockStreamServer::CLOSE) {
                         break;
                     }
-                    if (status == SockStreamServer::ERROR) {
+                    if (status == posix::SockStreamServer::ERROR) {
                         std::cout << "Something very wrong! review your code!" << std::endl;
                     }
                 }

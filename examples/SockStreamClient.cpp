@@ -7,8 +7,8 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    SockStreamClient::status_t status = SockStreamClient::CLOSE;
-    SockStreamClient client;
+    posix::SockStreamClient::status_t status = posix::SockStreamClient::CLOSE;
+    posix::SockStreamClient client;
 
     uint8_t message_in[128] = {0};
     string message_out = "Hello World! ";
@@ -24,18 +24,18 @@ int main(int argc, char** argv) {
                 message_out = "Hello World! " + std::to_string(count);
                 status = client.Write(message_out.c_str() , message_out.size(), &bytes);
                 //status = client.Read(message_in, sizeof(message_in), &bytes);
-                if (status == SockStreamClient::OK) {
+                if (status == posix::SockStreamClient::OK) {
                     if (bytes > 0)
                         cout << "Client: " << message_in << endl;
                     count++;
                 } else
-                if (status == SockStreamClient::NODATA) {
+                if (status == posix::SockStreamClient::NODATA) {
                     continue;
                 } else
-                if (status == SockStreamClient::CLOSE) {
+                if (status == posix::SockStreamClient::CLOSE) {
                     break;
                 }
-                if (status == SockStreamClient::ERROR) {
+                if (status == posix::SockStreamClient::ERROR) {
                     std::cout << "Something very wrong! review your code!" << std::endl;
                 }
                 usleep(250000);

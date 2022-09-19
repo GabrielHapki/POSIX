@@ -15,19 +15,19 @@ using namespace std;
 int main(int argc, char** argv) {
     bool status = false;
 #ifdef SUDP
-    SudpClient client;
+    posix::SudpClient client;
 #else
-    SockDgram client;
+    posix::SockDgram client;
 #endif
 
 #ifdef SUDP
     std::string message = "Hello World!";
-    Sudp::frame_t frame = {.size = message.size(), .buffer = std::vector<uint8_t>(message.data(), message.data() + message.size())};
+    posix::Sudp::frame_t frame = {.size = message.size(), .buffer = std::vector<uint8_t>(message.data(), message.data() + message.size())};
     //Sudp::frame_t frame;
     //std::copy(message.begin(), message.end(), std::back_inserter(frame.buffer));
     //frame.size = message.size();
 
-    if (client.Open(SockDgram::CLIENT, "127.0.0.1", 5000)) {
+    if (client.Open(posix::SockDgram::CLIENT, "127.0.0.1", 5000)) {
         while(1) {
             status = client.Send(frame);
             //status = client.Read(message_in, sizeof(message_in), &bytes);
