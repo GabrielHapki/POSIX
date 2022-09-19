@@ -17,9 +17,8 @@ message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
 message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
 message ("EXE_OUTPUT_PATH =>      ${EXECUTABLE_OUTPUT_PATH}")
 
-include_directories (${CMAKE_SOURCE_DIR}/libs/libMsgQueues)
-link_directories (${CMAKE_BINARY_DIR}/lib)
+include_directories (${CMAKE_SOURCE_DIR}/libs)
 
+find_library(LIBRT rt)
 add_executable (MessageSender main.cpp)
-
-target_link_libraries (MessageSender MsgQueues)
+target_link_libraries(MessageSender ${LIBRT})

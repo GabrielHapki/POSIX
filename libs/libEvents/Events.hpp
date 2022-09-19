@@ -40,7 +40,7 @@ class EventBase {
         const Events::Compare varCompare;
         const Events::Times &timeConfig;
         EventBase *depend;
-        Timer timer;
+        posix::Timer timer;
 #ifdef GENERIC_EVENT_DEBUG
         std::string name;
 #endif

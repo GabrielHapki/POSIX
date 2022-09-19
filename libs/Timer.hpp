@@ -3,6 +3,8 @@
 
 #include <chrono>
 
+namespace posix{
+
 class Timer {
 private:
     std::chrono::time_point<std::chrono::steady_clock> beginTime;
@@ -29,5 +31,7 @@ public:
         return elapsedTime.count();        
     }
 };
+
+}
 
 #endif /* TIMER_H */
