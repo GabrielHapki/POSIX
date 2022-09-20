@@ -21,42 +21,49 @@ protected:
     std::string name;
 
 public:
-    MsgQueuesBase() :
+    enum classType { SENDER, RECEIVER };
+
+    MsgQueuesBase(const char *key, classType type) :
         mqfd(-1)
-    {
-
-    }
-
-    virtual ~MsgQueuesBase(void)
-    {
-
-    }
-};
-
-class MsgQueuesSend : public MsgQueuesBase{
-public:
-    MsgQueuesSend(const char *key)
     {
         struct mq_attr attr;
         attr.mq_flags = 0;
         attr.mq_maxmsg = 10;
         attr.mq_msgsize = 32;
         attr.mq_curmsgs = 0;
-        mqfd = mq_open(key, O_WRONLY | O_CREAT, 0666, &attr);
+        if (type == SENDER) {
+            mqfd = mq_open(key, O_WRONLY | O_CREAT, 0666, &attr);
+        } else {
+            mqfd = mq_open(key, O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
+        }
         if (mqfd < 0) {
-            throw("mq_open failed: " + errno);
+            std::runtime_error("mq_open error: " + std::to_string(errno) + ", " + std::strerror(errno));
         } else {
             auto ret = mq_getattr(mqfd, &attr);
             if (ret < 0) {
-                throw("mq_getattr failed: " + errno);
+                throw std::runtime_error("mq_getattr error: "  + std::to_string(errno) + ", " + std::strerror(errno));
             }
         }
     }
 
-    ~MsgQueuesSend(void) override
+    ~MsgQueuesBase(void)
     {
-        if (mq_close(mqfd) == -1)
-            perror("mq_close failure on mqfd");
+        if (mq_close(mqfd) < 0)
+            std::cerr << "mq_close Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
+    }
+};
+
+class MsgQueuesSend : public MsgQueuesBase{
+public:
+    MsgQueuesSend(const char *key) :
+        MsgQueuesBase(key, SENDER)
+    {
+
+    }
+
+    ~MsgQueuesSend(void)
+    {
+
     }
 
     bool send(const void * buffer, size_t size, const unsigned int priority)
@@ -64,7 +71,7 @@ public:
         if (mqfd > 0) {
             int status = mq_send(mqfd, (const char *)buffer, size, priority);
             if (status < 0) {
-                perror("mq_send failure on mqfd");
+                std::cerr << "mq_send Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
             } else {
                 return true;
             }
@@ -75,31 +82,16 @@ public:
 
 class MsgQueuesReceive : public MsgQueuesBase{
 public:
-    MsgQueuesReceive(const char *key)
+    MsgQueuesReceive(const char *key) :
+        MsgQueuesBase(key, RECEIVER)
     {
-        name = key;
-        struct mq_attr attr = {0};
-        attr.mq_flags = 0;
-        attr.mq_maxmsg = 10;
-        attr.mq_msgsize = 32;
-        attr.mq_curmsgs = 0;
-        mqfd = mq_open(key, O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
-        if (mqfd < 0) {
-            throw("mq_open failed: " + errno);
-        } else {
-            auto ret = mq_getattr(mqfd, &attr);
-            if (ret < 0) {
-                throw("mq_getattr failed: " + errno);
-            }
-        }
+
     }
 
-    ~MsgQueuesReceive(void) override
+    ~MsgQueuesReceive(void)
     {
-        if (mq_close(mqfd) == -1)
-            perror("mq_close failure on mqfd");
-        if (mq_unlink(name.c_str()) == -1)
-            perror("mq_unlink failure in test_ipc");
+        if (mq_unlink((const char *)name.c_str()) < -0)
+            std::cerr << "mq_unlink Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
     }
 
     bool receive(void * buffer, size_t size, ssize_t *recLen, unsigned int *priority)
@@ -107,8 +99,7 @@ public:
         if (mqfd > 0) {
             *recLen = mq_receive(mqfd, (char *)buffer, size, priority);
             if (*recLen < 0) {
-                perror("mq_receive failure on mqfd");
-                std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
+                std::cerr << "mq_receive Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
             } else {
                 return true;
             }
