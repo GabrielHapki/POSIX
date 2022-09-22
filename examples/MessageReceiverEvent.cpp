@@ -18,15 +18,15 @@ class EventReceiver : public posix::MsgQueuesReceive{
         EventReceiver(const char *key, myMessage &pMessage) :
         MsgQueuesReceive(key, true),
         message(pMessage) {}
-        void event()
-        {
-            std::cout << "EventReceiver::event() got a message!" << std::endl;
-
-            if (receive(message.data, sizeof(message.data), &message.size, &message.priority)) {
-                std::cout << "Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
-            }
-        }
+        inline void event();
 };
+
+inline void EventReceiver::event()
+{
+    if (receive(message.data, sizeof(message.data), &message.size, &message.priority)) {
+        std::cout << "Event Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
+    }
+}
 
 int main(int argc, char** argv) {
     EventReceiver *mq = nullptr;
@@ -41,9 +41,11 @@ int main(int argc, char** argv) {
 
     while(1) {
         if (mq->receive(message.data, sizeof(message.data), &message.size, &message.priority)) {
-            std::cout << "Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
-        } else
+            std::cout << "New Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
+        } else {
+            std::cout << "Last Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
             sleep(5);
+        }
     }
 
     delete mq;

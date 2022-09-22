@@ -19,12 +19,11 @@ namespace posix{
 class MsgQueuesBase {
 protected:
     mqd_t mqfd;
-    std::string name;
 
 public:
     enum classType { SENDER, RECEIVER };
 
-    MsgQueuesBase(const char *key, classType type) :
+    MsgQueuesBase(const std::string &key, const classType &type) :
         mqfd(-1)
     {
         struct mq_attr attr;
@@ -33,9 +32,9 @@ public:
         attr.mq_msgsize = 32;
         attr.mq_curmsgs = 0;
         if (type == SENDER) {
-            mqfd = mq_open(key, O_WRONLY | O_CREAT, 0666, &attr);
+            mqfd = mq_open(key.c_str(), O_WRONLY | O_CREAT, 0666, &attr);
         } else {
-            mqfd = mq_open(key, O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
+            mqfd = mq_open(key.c_str(), O_RDONLY | O_CREAT | O_NONBLOCK, 0666, &attr);
         }
         if (mqfd < 0) {
             std::runtime_error("mq_open error: " + std::to_string(errno) + ", " + std::strerror(errno));
@@ -56,18 +55,18 @@ public:
 
 class MsgQueuesSend : public MsgQueuesBase{
 public:
-    MsgQueuesSend(const char *key) :
+    MsgQueuesSend(const std::string &key) :
         MsgQueuesBase(key, SENDER)
     {
 
     }
 
-    ~MsgQueuesSend(void)
+    virtual ~MsgQueuesSend(void)
     {
 
     }
 
-    bool send(const void * buffer, size_t size, const unsigned int priority)
+    bool send(const void * buffer, const size_t size, const unsigned int priority)
     {
         if (mqfd > 0) {
             int status = mq_send(mqfd, (const char *)buffer, size, priority);
@@ -83,7 +82,9 @@ public:
 
 class MsgQueuesReceive : public MsgQueuesBase{
 private:
-    bool eventSetup()
+    std::string mKey;
+
+    inline bool eventSetup()
     {
         struct sigevent sev;
         sev.sigev_notify = SIGEV_THREAD;
@@ -100,20 +101,21 @@ private:
     }
 
 public:
-    MsgQueuesReceive(const char *key, const bool event) :
+    MsgQueuesReceive(const std::string &key, const bool &event) :
         MsgQueuesBase(key, RECEIVER)
     {
+        mKey = key;
         if (event)
             eventSetup();
     }
 
-    ~MsgQueuesReceive()
+    virtual ~MsgQueuesReceive()
     {
-        if (mq_unlink((const char *)name.c_str()) < -0)
+        if (mq_unlink((const char *)mKey.c_str()) < -0)
             std::cerr << "mq_unlink Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
     }
 
-    bool receive(void * buffer, size_t size, ssize_t *recLen, unsigned int *priority)
+    bool receive(void * buffer, const size_t size, ssize_t *recLen, unsigned int *priority)
     {
         if (mqfd > 0) {
             *recLen = mq_receive(mqfd, (char *)buffer, size, priority);
@@ -134,7 +136,7 @@ public:
         pthread_exit(NULL);
     }
 
-    virtual void event()
+    inline virtual void event()
     {
 
     }
