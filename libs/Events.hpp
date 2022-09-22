@@ -241,7 +241,8 @@ class Event : public EventBase {
             std::cout << name << " Cooldown = " << std::fixed << std::setprecision(3) << timeConfig.cooldown << std::endl;
 #endif
         }
-        ~Event() {}
+        
+        virtual ~Event() {}
 
         /**
          * This function checks if the reference variable is more/less than the referece value.
