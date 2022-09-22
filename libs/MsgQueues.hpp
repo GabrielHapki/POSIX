@@ -3,6 +3,7 @@
 
 #include <fcntl.h>
 #include <mqueue.h>
+#include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
 
@@ -81,14 +82,32 @@ public:
 };
 
 class MsgQueuesReceive : public MsgQueuesBase{
-public:
-    MsgQueuesReceive(const char *key) :
-        MsgQueuesBase(key, RECEIVER)
+private:
+    bool eventSetup()
     {
+        struct sigevent sev;
+        sev.sigev_notify = SIGEV_THREAD;
+        sev.sigev_notify_function = this->eventThread;
+        sev.sigev_notify_attributes = NULL;
+        sev.sigev_value.sival_ptr = this;
 
+        if (mq_notify(mqfd, &sev) < 0) {
+            std::cerr << "mq_notify Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
+            return false;
+        }
+
+        return true;
     }
 
-    ~MsgQueuesReceive(void)
+public:
+    MsgQueuesReceive(const char *key, const bool event) :
+        MsgQueuesBase(key, RECEIVER)
+    {
+        if (event)
+            eventSetup();
+    }
+
+    ~MsgQueuesReceive()
     {
         if (mq_unlink((const char *)name.c_str()) < -0)
             std::cerr << "mq_unlink Error:" << std::to_string(errno) +  ", " << std::strerror(errno) << std::endl;
@@ -105,6 +124,19 @@ public:
             }
         }
         return false;
+    }
+
+    static void eventThread(union sigval sv)
+    {
+        posix::MsgQueuesReceive *mq = (posix::MsgQueuesReceive *)sv.sival_ptr;
+        mq->eventSetup();
+        mq->event();
+        pthread_exit(NULL);
+    }
+
+    virtual void event()
+    {
+
     }
 };
 

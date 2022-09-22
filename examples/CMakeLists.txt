@@ -27,6 +27,8 @@ add_executable (inotify Inotify.cpp)
 find_library(LIBRT rt)
 add_executable (msgReceiver MessageReceiver.cpp)
 target_link_libraries(msgReceiver ${LIBRT})
+add_executable (msgReceiverEvent MessageReceiverEvent.cpp)
+target_link_libraries(msgReceiverEvent ${LIBRT})
 add_executable (msgSender MessageSender.cpp)
 target_link_libraries(msgSender ${LIBRT})
 

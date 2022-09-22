@@ -3,21 +3,34 @@
 #include <string>
 #include "MsgQueues.hpp"
 
-using namespace std;
+#include <unistd.h>
+
+struct myMessage {
+    uint8_t data[32];
+    ssize_t size;
+    unsigned int priority;
+};
 
 int main(int argc, char** argv) {
-    uint8_t message_in[32] = {0};
-    ssize_t bytes = 0;
-    unsigned int priority = 0;
+    posix::MsgQueuesReceive *mq = nullptr;
 
     try {
-        posix::MsgQueuesReceive mq("/Test_MQ");
-        if (mq.receive(message_in, sizeof(message_in), &bytes, &priority))
-            cout << "Receive: " << std::to_string(bytes) << "bytes, " << message_in << ", priority " << std::to_string(priority) << endl;
+        mq = new posix::MsgQueuesReceive("/Test_MQ", false);
+    } catch(std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+        return 0;
     }
-    catch(exception& e) {
-         cerr << "Exception: " << e.what() << endl;
+
+    while(1) {
+        myMessage message = {0};
+    
+        if (mq->receive(message.data, sizeof(message.data), &message.size, &message.priority)) {
+            std::cout << "Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
+        } else
+            sleep(5);
     }
+
+    delete mq;
 
     return 0;
 }
