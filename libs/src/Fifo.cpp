@@ -17,9 +17,10 @@ bool FifoBase::Open(const char *pathname, const int flags)
         return false;
 
     if (mkfifo(pathname, 0666) < 0) {
-        std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
-        if (errno != 17)
+        if (errno != 17) {
+            std::cerr << "Error(" << errno << "): " << std::strerror(errno) << std::endl;
             return false;
+        }
     }
 
     this->fifoFd = open(pathname, flags);

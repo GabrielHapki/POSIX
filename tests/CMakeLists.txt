@@ -1,26 +1,39 @@
 project (examples)
 
-# The version number
-set (examples_VERSION_MAJOR 1)
-set (examples_VERSION_MINOR 0)
-
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_FLAGS "-Wall")
-
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
-# Thirdparty libraries
-add_subdirectory(thirdparty/googletest)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+#   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  GIT_REPOSITORY      https://github.com/google/googletest.git
+  GIT_TAG             v1.13.0  
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+add_library(GTest::GTest INTERFACE IMPORTED)
+target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
-message ("############################################################")
-message ("# Tests                                                 #")
-message ("CMAKE_HOME_DIRECTORY => ${CMAKE_HOME_DIRECTORY}")
-message ("CMAKE_INCLUDE_DIR =>    ${CMAKE_INCLUDE_DIR}")
-message ("CMAKE_SOURCE_DIR =>     ${CMAKE_SOURCE_DIR}")
-message ("CMAKE_BINARY_DIR =>     ${CMAKE_BINARY_DIR}")
-message ("EXE_OUTPUT_PATH =>      ${EXECUTABLE_OUTPUT_PATH}")
+enable_testing()
 
 include_directories (${CMAKE_SOURCE_DIR}/libs)
 include_directories (${CMAKE_SOURCE_DIR}/libs/inc)
 
-# add_dependencies(${PROJECT_NAME} getGoogleTest)
+add_executable(
+  posix_test
+  test_fifo.cpp
+  test_message.cpp
+  test_sock_dgram.cpp
+  test_sock_stream.cpp
+  test_timer.cpp
+)
+target_link_libraries(
+  posix_test
+  gposix
+  timer
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(posix_test)

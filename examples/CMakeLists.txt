@@ -1,12 +1,5 @@
 project (examples)
 
-# The version number
-set (examples_VERSION_MAJOR 1)
-set (examples_VERSION_MINOR 0)
-
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_FLAGS "-Wall")
-
 set (EXECUTABLE_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
 message ("############################################################")
@@ -21,25 +14,27 @@ include_directories (${CMAKE_SOURCE_DIR}/libs)
 include_directories (${CMAKE_SOURCE_DIR}/libs/inc)
 
 add_executable (events Events.cpp)
-target_link_libraries(events timer)
+target_link_libraries(events event timer)
 
 add_executable (fifoClient FifoClient.cpp)
-target_link_libraries(fifoClient fifo)
+target_link_libraries(fifoClient gposix)
 add_executable (fifoServer FifoServer.cpp)
-target_link_libraries(fifoServer fifo)
+target_link_libraries(fifoServer gposix)
 add_executable (eg_inotify Inotify.cpp)
-target_link_libraries(eg_inotify inotify)
+target_link_libraries(eg_inotify gposix)
 
 add_executable (msgReceiver MessageReceiver.cpp)
-target_link_libraries(msgReceiver msgqueues)
+target_link_libraries(msgReceiver gposix)
 add_executable (msgReceiverEvent MessageReceiverEvent.cpp)
-target_link_libraries(msgReceiverEvent msgqueues)
+target_link_libraries(msgReceiverEvent gposix)
 add_executable (msgSender MessageSender.cpp)
-target_link_libraries(msgSender msgqueues)
+target_link_libraries(msgSender gposix)
 
 add_executable (sockDgramClient SockDgramClient.cpp)
-target_link_libraries(sockDgramClient sockdgram)
+target_link_libraries(sockDgramClient gposix)
 add_executable (sockDgramServer SockDgramServer.cpp)
-target_link_libraries(sockDgramServer sockdgram)
+target_link_libraries(sockDgramServer gposix)
 add_executable (sockStreamClient SockStreamClient.cpp)
+target_link_libraries(sockStreamClient gposix)
 add_executable (sockStreamServer SockStreamServer.cpp)
+target_link_libraries(sockStreamServer gposix)

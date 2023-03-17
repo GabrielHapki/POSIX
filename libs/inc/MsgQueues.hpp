@@ -20,7 +20,7 @@ public:
 class MsgQueuesSend : public MsgQueuesBase{
 public:
     MsgQueuesSend(const std::string &key);
-    ~MsgQueuesSend(void);
+    virtual ~MsgQueuesSend(void);
 
     bool send(const void * buffer, const size_t size, const unsigned int priority);
 };
@@ -33,7 +33,7 @@ private:
 
 public:
     MsgQueuesReceive(const std::string &key, const bool &event);
-    ~MsgQueuesReceive();
+    virtual ~MsgQueuesReceive();
     bool receive(void * buffer, const size_t size, ssize_t *recLen, unsigned int *priority);
     static void eventThread(union sigval sv)
     {

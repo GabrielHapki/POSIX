@@ -6,13 +6,12 @@
 #include <chrono>
 #include <vector>
 #include <Timer.hpp>
+#include <iomanip>
 
-//#define GENERIC_EVENT_DEBUG
+#define GENERIC_EVENT_DEBUG
 
 namespace Events
 {
-    const std::string AC_CONNECT =          "ac_connect";
-    const std::string AC_DISCONNECT =       "ac_disconnect";
     const std::string BATTERY_LOW =         "battery_low";
     const std::string BATTERY_RESTORED =    "battery_restored";
 
@@ -23,7 +22,7 @@ namespace Events
         float cooldown;
     };
 
-    enum States { IDLE, DEBOUNCE, EXECUTE, COOLDOWN, BLOCKED };
+    enum States { IDLE = 0, DEBOUNCE, EXECUTE, COOLDOWN, BLOCKED };
 }
 
 /**
@@ -57,147 +56,37 @@ class EventBase {
          *
          * @return A boolean value (true = has dependent, false = have not).
          */
-        bool hasDependent()
-        {
-            if (depend != nullptr) {
-                if (depend->state == Events::BLOCKED)
-                    return true;
-                else
-                    return false;
-            }
-            return true;            
-        }
+        bool hasDependent();
 
     public:
-        EventBase(const Events::Compare pCmp, const Events::Times &pCfg):
-            state(Events::IDLE),
-            status(false),
-            varCompare(pCmp),
-            timeConfig(pCfg),
-            depend(nullptr)
-        {
-
-        }
-
-        ~EventBase()
-        {
-
-        }
+        EventBase(const Events::Compare pCmp, const Events::Times &pCfg);
+        ~EventBase();
 
         /**
          * This function is an event state machine.
          */
-        void run()
-        {
-            switch (state) {
-            case Events::IDLE:
-                if (compareLogic() && hasDependent()) {
-                    if (timeConfig.debounce != 0.f) {
-                        timer.start();
-                        state = Events::DEBOUNCE;
-        #ifdef GENERIC_EVENT_DEBUG
-                        std::cout << name << " -> DEBOUNCE" << std::endl;
-        #endif
-                    } else {
-                        state = Events::EXECUTE;
-        #ifdef GENERIC_EVENT_DEBUG
-                        std::cout << name << " -> EXECUTE" << std::endl;
-        #endif
-                    }
-                }
-                break;
-            case Events::DEBOUNCE:
-                if (compareLogic() && hasDependent()) {
-                    if (timer.get() >= timeConfig.debounce) {
-                        state = Events::EXECUTE;
-        #ifdef GENERIC_EVENT_DEBUG
-                        std::cout << name << " -> EXECUTE" << std::endl;
-        #endif
-                    }
-                } else {
-                    state = Events::IDLE;
-        #ifdef GENERIC_EVENT_DEBUG
-                    std::cout << name << " -> IDLE" << std::endl;
-        #endif
-                }
-                break;
-            case Events::EXECUTE:
-                status = true;
-                callback();
-                timer.start();
-                state = Events::COOLDOWN;
-        #ifdef GENERIC_EVENT_DEBUG
-                std::cout << name << " -> COOLDOWN" << std::endl;
-        #endif
-                break;
-            case Events::COOLDOWN:
-                {
-                if (timer.get() >= timeConfig.cooldown) {
-                    if (depend != nullptr) {
-                        depend->reset();
-                        state = Events::BLOCKED;
-        #ifdef GENERIC_EVENT_DEBUG
-                        std::cout << name << " -> BLOCKED" << std::endl;
-        #endif
-                    } else {
-                        state = Events::IDLE;
-        #ifdef GENERIC_EVENT_DEBUG
-                        std::cout << name << " -> IDLE" << std::endl;
-        #endif
-                    }
-                }
-                }
-                break;
-            case Events::BLOCKED:
-                break;
-            }
-        }
+        void run();
 
         /**
          * This function resets the state machine.
          */
-        void reset()
-        {
-            if (state != Events::IDLE) {
-                state = Events::IDLE;
-        #ifdef GENERIC_EVENT_DEBUG
-                std::cout << name << " -> IDLE (by reset)" << std::endl;
-        #endif
-            }            
-        }
+        void reset();
 
         /**
          * This function returns if an event happened and reset the flag.
          */
-        bool event()
-        {
-            if (status) {
-                bool tmp = status;
-                status = false;
-                return tmp;
-            }
-            return false;
-        }
+        bool event();
 
         /**
          * This function sets another event as a dependent.
          * It is necessary to define mutual dependence.
          */
-        void setDependent(EventBase *vDep)
-        {
-            depend = vDep;
-            if ((state == Events::IDLE) && (depend->state == Events::IDLE)) {
-                depend->state = Events::BLOCKED;
-            }
-        }
+        void setDependent(EventBase *vDep);
 
         /**
          * This function returns the current state.
          */
-        Events::States getState()
-        {
-            return state;
-        }
+        Events::States getState();
 
         /**
          * This function will be called in the EXECUTE state.
@@ -278,25 +167,13 @@ class EventList {
          *
          * @param eList List of events pointers
          */
-        EventList(const std::vector<EventBase*> eList)
-        {
-
-        }
-
-        ~EventList()
-        {
-
-        }
+        EventList(const std::vector<EventBase*> eList);
+        ~EventList();
 
     /**
      * This function executes all events in the list.
      */
-    void run()
-    {
-        for (auto event : eventList) {
-            event->run();
-        }
-    }
+    void run();
 };
 
 #endif /* EVENTS_H */
