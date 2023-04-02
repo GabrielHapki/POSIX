@@ -1,13 +1,14 @@
 #include <gtest/gtest.h>
 #include "MsgQueues.hpp"
+#include <memory>
 #include <string>
 
 TEST(Message, ReceiverInit) {
-  posix::MsgQueuesReceive *mq = nullptr;
+  std::unique_ptr<posix::MsgQueuesReceive> mq;
 
   EXPECT_NO_THROW({
     try {
-      mq = new posix::MsgQueuesReceive("/Test_MQ", false);
+      mq = std::make_unique<posix::MsgQueuesReceive>("/Test_MQ", false);
     }
     catch(std::exception& e) {
       std::cerr << "Exception: " << e.what() << std::endl;
@@ -16,16 +17,14 @@ TEST(Message, ReceiverInit) {
   });  
 
   EXPECT_NE(mq, nullptr);
-
-  delete mq;
 }
 
 TEST(Message, SenderInit) {
-  posix::MsgQueuesSend *mq = nullptr;
+  std::unique_ptr<posix::MsgQueuesSend> mq;
 
   EXPECT_NO_THROW({
     try {
-      mq = new posix::MsgQueuesSend("/Test_MQ");
+      mq = std::make_unique<posix::MsgQueuesSend>("/Test_MQ");
     }
     catch(std::exception& e) {
       std::cerr << "Exception: " << e.what() << std::endl;
@@ -34,8 +33,6 @@ TEST(Message, SenderInit) {
   });  
 
   EXPECT_NE(mq, nullptr);
-
-  delete mq;
 }
 
 struct myMessage {
@@ -45,12 +42,12 @@ struct myMessage {
 };
 
 TEST(Message, SenderToReceiver) {
-  posix::MsgQueuesReceive *mqr = nullptr;
-  posix::MsgQueuesSend *mqs = nullptr;
+  std::unique_ptr<posix::MsgQueuesReceive> mqr;
+  std::unique_ptr<posix::MsgQueuesSend> mqs;
 
   EXPECT_NO_THROW({
     try {
-      mqr = new posix::MsgQueuesReceive("/Test_MQ", false);
+      mqr = std::make_unique<posix::MsgQueuesReceive>("/Test_MQ", false);
     }
     catch(std::exception& e) {
       std::cerr << "Exception: " << e.what() << std::endl;
@@ -62,7 +59,7 @@ TEST(Message, SenderToReceiver) {
   std::string message_out = "Hello World!!!";
   EXPECT_NO_THROW({
     try {
-      mqs = new posix::MsgQueuesSend("/Test_MQ");
+      mqs = std::make_unique<posix::MsgQueuesSend>("/Test_MQ");
       mqs->send(message_out.c_str(), message_out.size(), 1);
     }
     catch(std::exception& e) {
@@ -78,9 +75,6 @@ TEST(Message, SenderToReceiver) {
   EXPECT_EQ(message.priority, 1);
   EXPECT_EQ(message.size, message_out.size());
   EXPECT_STREQ(message_out.c_str(), message.data);
-
-  delete mqr;
-  delete mqs;
 }
 
 class EventReceiver : public posix::MsgQueuesReceive{
@@ -99,13 +93,13 @@ class EventReceiver : public posix::MsgQueuesReceive{
 };
 
 TEST(Message, SenderToReceiverEvent) {
-  EventReceiver *mqr = nullptr;
-  posix::MsgQueuesSend *mqs = nullptr;
+  std::unique_ptr<EventReceiver> mqr;
+  std::unique_ptr<posix::MsgQueuesSend> mqs;
   myMessage message = {0};
 
   EXPECT_NO_THROW({
     try {
-      mqr = new EventReceiver("/Test_MQ", message);
+      mqr = std::make_unique<EventReceiver>("/Test_MQ", message);
     }
     catch(std::exception& e) {
       std::cerr << "Exception: " << e.what() << std::endl;
@@ -117,7 +111,7 @@ TEST(Message, SenderToReceiverEvent) {
   std::string message_out = "Hello World!!!";
   EXPECT_NO_THROW({
     try {
-      mqs = new posix::MsgQueuesSend("/Test_MQ");
+      mqs = std::make_unique<posix::MsgQueuesSend>("/Test_MQ");
       mqs->send(message_out.c_str(), message_out.size(), 1);
     }
     catch(std::exception& e) {
@@ -132,7 +126,4 @@ TEST(Message, SenderToReceiverEvent) {
   EXPECT_EQ(message.priority, 1);
   EXPECT_EQ(message.size, message_out.size());
   EXPECT_STREQ(message_out.c_str(), message.data);
-
-  delete mqr;
-  delete mqs;
 }

@@ -4,7 +4,6 @@
 
 TEST(Fifo, ClientWithoutServer) {
   posix::FifoClient client;
-
   EXPECT_EQ(client.Open("/tmp/myfifo"), false);
 }
 

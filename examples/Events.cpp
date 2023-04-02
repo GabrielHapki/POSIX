@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <map>
+#include <memory>
 
 std::map<std::string, Events::Times> eventConfig { //Sets the default values for the eventConfig map, these values will be replaced by the loadConfig()
     {Events::BATTERY_LOW,       {3.f, 3.f}},
