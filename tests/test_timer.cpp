@@ -12,7 +12,7 @@ TEST(Timer, Init) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(timer, nullptr);
 
@@ -30,7 +30,7 @@ TEST(Timer, Test) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(timer, nullptr);
 
@@ -39,5 +39,5 @@ TEST(Timer, Test) {
   usleep(delay);
   EXPECT_NEAR(timer->get(), delay/1000000.f, 1e-4);
 
-  delete timer;  
+  delete timer;
 }

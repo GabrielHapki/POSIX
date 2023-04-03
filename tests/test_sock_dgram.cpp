@@ -13,7 +13,7 @@ TEST(SockDgram, Init) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(client, nullptr);
 
@@ -44,12 +44,15 @@ TEST(SockDgram, ClientToServer) {
     }
   });
 
-  EXPECT_EQ(client->Open(posix::SockDgram::CLIENT, "127.0.0.1", 5000, posix::SockDgram::NONBLOCK), true);
-  EXPECT_EQ(server->Open(posix::SockDgram::SERVER, "127.0.0.1", 5000, posix::SockDgram::NONBLOCK), true);
+  EXPECT_EQ(client->Open(posix::SockDgram::CLIENT, "127.0.0.1", 5000,
+    posix::SockDgram::NONBLOCK), true);
+  EXPECT_EQ(server->Open(posix::SockDgram::SERVER, "127.0.0.1", 5000,
+    posix::SockDgram::NONBLOCK), true);
 
   std::string message_out = "Hello World!!!";
   ssize_t bytes = 0;
-  EXPECT_EQ(client->Write(message_out.c_str(), message_out.size(), &bytes), true);
+  EXPECT_EQ(client->Write(message_out.c_str(), message_out.size(),
+    &bytes), true);
   EXPECT_EQ(message_out.size(), bytes);
 
   char message_in[32] = {0};

@@ -15,7 +15,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 add_library(GTest::GTest INTERFACE IMPORTED)
-target_link_libraries(GTest::GTest INTERFACE gtest_main)
+target_link_libraries(GTest::GTest INTERFACE gtest_main gmock_main)
 
 enable_testing()
 
@@ -29,12 +29,14 @@ add_executable(
   test_sock_dgram.cpp
   test_sock_stream.cpp
   test_timer.cpp
+  test_turtle.cpp
 )
 target_link_libraries(
   posix_test
   gposix
   timer
   GTest::gtest_main
+  GTest::gmock_main
 )
 
 include(GoogleTest)

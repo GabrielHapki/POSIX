@@ -14,7 +14,7 @@ TEST(Message, ReceiverInit) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(mq, nullptr);
 }
@@ -30,7 +30,7 @@ TEST(Message, SenderInit) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(mq, nullptr);
 }
@@ -53,7 +53,7 @@ TEST(Message, SenderToReceiver) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
   EXPECT_NE(mqr, nullptr);
 
   std::string message_out = "Hello World!!!";
@@ -66,11 +66,12 @@ TEST(Message, SenderToReceiver) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
   EXPECT_NE(mqs, nullptr);
 
   myMessage message = {0};
-  EXPECT_EQ(mqr->receive(message.data, sizeof(message.data), &message.size, &message.priority), true);
+  EXPECT_EQ(mqr->receive(message.data, sizeof(message.data), &message.size,
+    &message.priority), true);
 
   EXPECT_EQ(message.priority, 1);
   EXPECT_EQ(message.size, message_out.size());
@@ -78,16 +79,18 @@ TEST(Message, SenderToReceiver) {
 }
 
 class EventReceiver : public posix::MsgQueuesReceive{
-    private:
+ private:
         myMessage &message;
-    public:
+ public:
         EventReceiver(const char *key, myMessage &pMessage) :
         MsgQueuesReceive(key, true),
         message(pMessage) {}
-        inline void event()
-        {
-            if (receive(message.data, sizeof(message.data), &message.size, &message.priority)) {
-                // std::cout << "Event Receive: " << std::to_string(message.size) << "bytes, " << message.data << ", priority " << std::to_string(message.priority) << std::endl;
+        inline void event() {
+            if (receive(message.data, sizeof(message.data), &message.size,
+              &message.priority)) {
+              // std::cout << "Event Receive: " << std::to_string(message.size)
+              // << "bytes, " << message.data << ", priority " <<
+              // std::to_string(message.priority) << std::endl;
             }
         }
 };
@@ -105,7 +108,7 @@ TEST(Message, SenderToReceiverEvent) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
   EXPECT_NE(mqr, nullptr);
 
   std::string message_out = "Hello World!!!";
@@ -118,7 +121,7 @@ TEST(Message, SenderToReceiverEvent) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
   EXPECT_NE(mqs, nullptr);
 
   usleep(10000);

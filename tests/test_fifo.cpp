@@ -24,7 +24,8 @@ TEST(Fifo, ClientToServer) {
 
   std::string message_out = "Hello World!";
   ssize_t bytes = 0;
-  EXPECT_EQ(client.Write(message_out.c_str() , message_out.size(), &bytes), true);
+  EXPECT_EQ(client.Write(message_out.c_str() , message_out.size(), &bytes),
+    true);
 
   char message_in[128] = {0};
   EXPECT_EQ(server.Read(message_in, sizeof(message_in), &bytes), true);

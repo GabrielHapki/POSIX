@@ -15,7 +15,7 @@ TEST(SockStream, ClientInit) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(client, nullptr);
 
@@ -33,7 +33,7 @@ TEST(SockStream, ServerInit) {
       std::cerr << "Exception: " << e.what() << std::endl;
       throw;
     }
-  });  
+  });
 
   EXPECT_NE(server, nullptr);
 
@@ -43,8 +43,7 @@ TEST(SockStream, ServerInit) {
 class myTest
 {
   public:
-    myTest() : server(nullptr), client(nullptr), run(true)
-    {
+    myTest() : server(nullptr), client(nullptr), run(true) {
       EXPECT_NO_THROW({
         try {
           server = new posix::SockStreamServer();
@@ -53,7 +52,7 @@ class myTest
           std::cerr << "Exception: " << e.what() << std::endl;
           throw;
         }
-      });  
+      });
 
       EXPECT_NO_THROW({
         try {
@@ -67,15 +66,16 @@ class myTest
 
       handleThread = std::thread(&myTest::Thread, this);
       handleThread.detach();
-      
+
       usleep(10000);
 
       EXPECT_EQ(client->Open("127.0.0.1", 5000), true);
 
       std::string message_out = "Hello World!!!";
       ssize_t bytes = 0;
-      EXPECT_EQ(client->Write(message_out.c_str() , message_out.size(), &bytes), posix::SockStreamClient::status_t::OK);
-      
+      EXPECT_EQ(client->Write(message_out.c_str() , message_out.size(), &bytes),
+        posix::SockStreamClient::status_t::OK);
+
       usleep(10000);
       run = false;
 
@@ -83,8 +83,7 @@ class myTest
       EXPECT_STREQ(message_out.c_str(), message_in);
     }
 
-    ~myTest()
-    {
+    ~myTest() {
       EXPECT_EQ(client->Close(), true);
       EXPECT_EQ(server->Close(), true);
 
@@ -92,27 +91,25 @@ class myTest
       delete server;
     }
 
-    void Thread()
-    {
+    void Thread() {
       posix::SockStreamServer::status_t status = posix::SockStreamServer::CLOSE;
       ssize_t bytes = 0;
       EXPECT_EQ(server->Open(5000, 1), true);
 
-      while(run) {
+      while (run) {
         if (server->Accept()) {
           bzero(message_in, sizeof(message_in));
           status = server->Read(message_in, sizeof(message_in), &bytes);
           if (status == posix::SockStreamServer::OK) {
               // std::cout << "Server: " << message_in << std::endl;
-          } else
-          if (status == posix::SockStreamServer::NODATA) {
+          } else if (status == posix::SockStreamServer::NODATA) {
               continue;
-          } else
-          if (status == posix::SockStreamServer::CLOSE) {
+          } else if (status == posix::SockStreamServer::CLOSE) {
               break;
           }
           if (status == posix::SockStreamServer::ERROR) {
-              std::cout << "Something very wrong! review your code!" << std::endl;
+              std::cout << "Something very wrong! review your code!" <<
+                std::endl;
           }
         }
       }
